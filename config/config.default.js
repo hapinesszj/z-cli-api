@@ -1,7 +1,10 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
-const {REDIS_PORT, REDIS_HOST, REDIS_PWD, MONGODB_URL} = require('./db');
+const path = require('path');
+const dotenv = require('dotenv');
+
+dotenv.config({path: path.resolve(__dirname, '../.env')});
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -26,24 +29,6 @@ module.exports = (appInfo) => {
         connectionMiddleware: ['auth'],
         packetMiddleware: ['filter'],
       },
-    },
-  };
-
-  // add redis Server config
-  config.redis = {
-    client: {
-      port: REDIS_PORT,
-      host: REDIS_HOST,
-      password: REDIS_PWD,
-      db: 0,
-    },
-  };
-
-  // add mongoose Server config
-  config.mongoose = {
-    url: MONGODB_URL,
-    options: {
-      useUnifiedTopology: true,
     },
   };
 

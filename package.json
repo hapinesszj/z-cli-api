@@ -9,6 +9,7 @@
   "dependencies": {
     "ali-oss": "^6.15.2",
     "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
     "egg": "^3",
     "egg-mongoose": "^4.0.0",
     "egg-redis": "^2.5.0",
@@ -31,8 +32,8 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-z-cli-server",
-    "stop": "egg-scripts stop --title=egg-server-z-cli-server",
+    "start": "egg-scripts start --daemon --title=egg-server-z-cli-api",
+    "stop": "egg-scripts stop --title=egg-server-z-cli-api",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",

@@ -7,7 +7,6 @@ const userHome = require('user-home');
 const Git = require('simple-git');
 const glob = require('glob');
 const {success, failed, exec, checkCommand} = require('../utils/tools');
-const config = require('../../config/db');
 const OSS = require('../models/oss');
 const REDIS_PREFIX = 'cloudbuild';
 
@@ -31,23 +30,25 @@ class CloudBuildTask {
   }
 
   /**
-   * 构建准备
+   * @description 构建准备
+   * @author by hapinesszj
    */
   async preBuild() {
     fse.ensureDirSync(this._dir);
     fse.emptyDirSync(this._dir);
     this._git = new Git(this._dir);
     if (this._prod) {
-      this.oss = new OSS(config.OSS_PROD_BUCKET);
+      this.oss = new OSS(process.env.OSS_PROD_BUCKET);
     } else {
-      this.oss = new OSS(config.OSS_DEV_BUCKET);
+      this.oss = new OSS(process.env.OSS_DEV_BUCKET);
     }
     this._logger.info('OSS', this.oss);
     return success();
   }
 
   /**
-   * 下载源码
+   * @description 下载源码
+   * @author by hapinesszj
    */
   async download() {
     await this._git.clone(this._repo);
@@ -57,7 +58,8 @@ class CloudBuildTask {
   }
 
   /**
-   * 安装依赖
+   * @description 安装依赖
+   * @author by hapinesszj
    */
   async install() {
     //npm install --registry=https://registry.npm.taobao.org
@@ -66,7 +68,8 @@ class CloudBuildTask {
   }
 
   /**
-   * 执行构建
+   * @description 执行构建
+   * @author by hapinesszj
    */
   async build() {
     let res;
@@ -80,7 +83,8 @@ class CloudBuildTask {
   }
 
   /**
-   * 发布准备
+   * @description 发布准备
+   * @author by hapinesszj
    */
   prePublish() {
     const buildDirs = ['dist', 'build'];
@@ -98,7 +102,8 @@ class CloudBuildTask {
   }
 
   /**
-   * 执行发布
+   * @description 执行发布
+   * @author by hapinesszj
    */
   publish() {
     return new Promise((resolve) => {
@@ -134,7 +139,8 @@ class CloudBuildTask {
   }
 
   /**
-   * 清理构建产物、redis缓存
+   * @description 清理构建产物、redis缓存
+   * @author by hapinesszj
    */
   async clean() {
     if (fs.existsSync(this._dir)) {
@@ -147,8 +153,9 @@ class CloudBuildTask {
   }
 
   /**
-   * 判断是否是正式发布
-   * @returns
+   * @description 判断是否是正式发布
+   * @returns boolean true | false
+   * @author by hapinesszj
    */
   isProd() {
     return this._prod;
@@ -156,7 +163,8 @@ class CloudBuildTask {
 
   /**
    * 判断是否是history路由形式
-   * @returns
+   * @returns boolean true | false
+   * @author by hapinesszj
    */
   isHistory() {
     return this._isHistoryRouter;
@@ -164,8 +172,9 @@ class CloudBuildTask {
 
   /**
    * 动态执行命令
-   * @param {*} command
-   * @returns
+   * @param {string} command
+   * @returns Promise
+   * @author by hapinesszj
    */
   _execCommand(command) {
     const commands = command.split(' ');
@@ -201,6 +210,13 @@ class CloudBuildTask {
   }
 }
 
+/**
+ * @description 创建构建任务
+ * @param {object} ctx
+ * @param {object} app
+ * @returns CloudBuildTask
+ * @author by hapinesszj
+ */
 async function createCloudBuildTask(ctx, app) {
   const {socket, helper} = ctx;
   const client = socket.id;

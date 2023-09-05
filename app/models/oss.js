@@ -1,21 +1,20 @@
 'use strict';
 
-const config = require('../../config/db');
-
 class OSS {
   constructor(bucket) {
     this.oss = require('ali-oss')({
-      accessKeyId: config.OSS_ACCESS_KEY,
-      accessKeySecret: config.OSS_ACCESS_SECRET_KEY,
+      accessKeyId: process.env.OSS_ACCESS_KEY,
+      accessKeySecret: process.env.OSS_ACCESS_SECRET_KEY,
       bucket,
-      region: config.OSS_REGION,
+      region: process.env.OSS_REGION,
     });
   }
 
   /**
-   * 查询oss文件列表
-   * @param {*} prefix
-   * @returns
+   * @description 查询oss文件列表
+   * @param {string} prefix
+   * @returns array
+   * @author by hapinesszj
    */
   async list(prefix) {
     const ossFileList = await this.oss.list({
@@ -28,10 +27,11 @@ class OSS {
   }
 
   /**
-   * 文件推送oss
-   * @param {*} object
-   * @param {*} localPath
-   * @param {*} options
+   * @description 文件推送oss
+   * @param {object} object
+   * @param {string} localPath
+   * @param {object} options
+   * @author by hapinesszj
    */
   async put(object, localPath, options = {}) {
     await this.oss.put(object, localPath, options);

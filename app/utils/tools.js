@@ -3,31 +3,34 @@
 const {SUCCESS, FAILED} = require('../const');
 
 /**
- * 响应成功
- * @param {*} message
+ * @description 响应成功
+ * @param {string} message
  * @param {*} data
- * @returns
+ * @returns response
+ * @author by hapinesszj
  */
 function success(message, data) {
   return response(SUCCESS, message, data);
 }
 
 /**
- * 响应失败
- * @param {*} message
+ * @description 响应失败
+ * @param {string} message
  * @param {*} data
- * @returns
+ * @returns response
+ * @author by hapinesszj
  */
 function failed(message, data) {
   return response(FAILED, message, data);
 }
 
 /**
- * 响应结果
- * @param {*} code
- * @param {*} message
+ * @description 响应结果
+ * @param {string} code
+ * @param {string} message
  * @param {*} data
- * @returns
+ * @returns Object
+ * @author by hapinesszj
  */
 function response(code, message, data) {
   return {
@@ -38,9 +41,10 @@ function response(code, message, data) {
 }
 
 /**
- * 格式化名称
- * @param {*} name
- * @returns
+ * @description 格式化名称
+ * @param {string} name
+ * @returns string
+ * @author by hapinesszj
  */
 function formatName(name) {
   let _name = name;
@@ -52,11 +56,12 @@ function formatName(name) {
 }
 
 /**
- * 子进程执行命令
- * @param {*} command
- * @param {*} args
- * @param {*} options
- * @returns
+ * @description 子进程执行命令
+ * @param {string} command
+ * @param {object} args
+ * @param {object} options
+ * @returns node child_process
+ * @author by hapinesszj
  */
 function exec(command, args, options) {
   const win32 = process.platform === 'win32';
@@ -68,9 +73,10 @@ function exec(command, args, options) {
 }
 
 /**
- * 命令检查
- * @param {*} command
- * @returns
+ * @description 命令检查
+ * @param {string} command
+ * @returns boolean true | false
+ * @author by hapinesszj
  */
 function checkCommand(command) {
   if (command) {

@@ -2,12 +2,13 @@
 
 const {Controller} = require('egg');
 const OSS = require('../models/oss');
-const config = require('../../config/db');
 const {success, failed} = require('../utils/tools');
 
 class ProjectController extends Controller {
   /**
-   * 获取模版数据
+   * @description 获取模版数据
+   * @returns success failed
+   * @author by hapinesszj
    */
   async getTemplates() {
     try {
@@ -25,8 +26,9 @@ class ProjectController extends Controller {
   }
 
   /**
-   * 获取oss项目文件
-   * @returns
+   * @description 获取oss项目文件
+   * @returns success failed
+   * @author by hapinesszj
    */
   async getOssTargetProject() {
     const {ctx} = this;
@@ -43,9 +45,9 @@ class ProjectController extends Controller {
     }
     let oss;
     if (ossProjectType === 'prod') {
-      oss = new OSS(config.OSS_PROD_BUCKET);
+      oss = new OSS(process.env.OSS_PROD_BUCKET);
     } else {
-      oss = new OSS(config.OSS_DEV_BUCKET);
+      oss = new OSS(process.env.OSS_DEV_BUCKET);
     }
     if (oss) {
       const fileList = await oss.list(ossProjectName);
@@ -60,7 +62,9 @@ class ProjectController extends Controller {
   }
 
   /**
-   * 获取oss指定文件
+   * @description 获取oss指定文件
+   * @returns success failed
+   * @author by hapinesszj
    */
   async getOssTargetFile() {
     const {ctx} = this;
@@ -76,9 +80,9 @@ class ProjectController extends Controller {
     }
     let oss;
     if (ossProjectType === 'prod') {
-      oss = new OSS(config.OSS_PROD_BUCKET);
+      oss = new OSS(process.env.OSS_PROD_BUCKET);
     } else {
-      oss = new OSS(config.OSS_DEV_BUCKET);
+      oss = new OSS(process.env.OSS_DEV_BUCKET);
     }
     if (oss) {
       const fileList = await oss.list(dir);

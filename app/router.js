@@ -15,7 +15,6 @@ module.exports = (app) => {
   // websocket api
   app.io.route('build', app.io.controller.build.index);
 
-  // test db
-  router.get('/redis/getRedisTargetKey', controller.redis.getRedisTargetKey);
-  router.get('/mongo/getMongoTestData', controller.mongo.getMongoTestData);
+  // test api
+  router.get('/ping', controller.ping.index);
 };
