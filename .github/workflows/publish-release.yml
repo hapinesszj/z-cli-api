@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'
 jobs:
   publish-release:
-    runs-on: centos-latest
+    runs-on: ubuntu-latest
     steps:
       # checkout 代码
       - uses: actions/checkout@v2
