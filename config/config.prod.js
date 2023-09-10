@@ -10,7 +10,7 @@ module.exports = (appInfo) => {
     client: {
       host: process.env.REDIS_HOST,
       port: process.env.REDIS_PORT,
-      password: process.env.REDIS_PWD,
+      password: process.env.REDIS_PASSWORD,
       db: 0,
     },
   };

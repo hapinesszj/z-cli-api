@@ -14,7 +14,7 @@ services:
     image: redis
     container_name: z-cli-redis
     command: >
-      --requirepass ${REDIS_PWD}
+      --requirepass ${REDIS_PASSWORD}
     ports:
       - 6380:6379
     env_file:
