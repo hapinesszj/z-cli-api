@@ -23,7 +23,7 @@ services:
     depends_on:
       - z-cli-mongo
       - z-cli-redis
-    image: registry.cn-hangzhou.aliyuncs.com/hapinesszj/z-cli-api:{{tag}}
+    image: registry.cn-hangzhou.aliyuncs.com/hapinesszj/z-cli-api:v0.0.1
     container_name: z-cli-api
     ports:
      - 7002:7001
