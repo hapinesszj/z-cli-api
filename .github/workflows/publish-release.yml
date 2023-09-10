@@ -6,21 +6,28 @@ on:
       - 'v*.*.*'
 jobs:
   publish-release:
-    runs-on: ubuntu-latest
+    runs-on: centos-latest
     steps:
       # checkout 代码
       - uses: actions/checkout@v2
       # 创建 env 文件
-      # build docker image
-      # start the app
       - name: 'create env file'
         run: |
           touch .env
+          echo OSS_ACCESS_KEY=${{ secrets.OSS_ACCESS_KEY }} >> .env
+          echo OSS_ACCESS_SECRET_KEY=${{ secrets.OSS_ACCESS_SECRET_KEY }} >> .env
+          echo OSS_PROD_BUCKET=${{ secrets.OSS_PROD_BUCKET }} >> .env
+          echo OSS_DEV_BUCKET=${{ secrets.OSS_DEV_BUCKET }} >> .env
+          echo OSS_REGION=${{ secrets.OSS_REGION }} >> .env
+          echo REDIS_HOST=${{ secrets.REDIS_HOST }} >> .env
+          echo REDIS_PORT=${{ secrets.REDIS_PORT }} >> .env
+          echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
+          echo MONGO_URL=${{ secrets.MONGO_URL }} >> .env
           echo MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} >> .env
           echo MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} >> .env
-          echo MONGO_DB_USERNAME=${{ secrets.MONGO_DB_USERNAME }} >> .env
-          echo MONGO_DB_PASSWORD=${{ secrets.MONGO_DB_PASSWORD }} >> .env
-          echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
+          echo MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} >> .env
+          echo MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} >> .env
+          echo PING=${{ secrets.PING }} >> .env
       # 使用阿里云ACR 完成 docker login
       - name: Login to Aliyun Container Registry (ACR)
         uses: aliyun/acr-login@v1
@@ -31,10 +38,10 @@ jobs:
           password: '${{ secrets.ACR_PASSWORD }}'
       # 使用正确的github tag 对应ACR tag 进行 docker build
       - name: Build image for ACR docker
-        run: docker build --tag "registry.cn-hangzhou.aliyuncs.com/vikingmute/lego:${{github.ref_name}}" .
+        run: docker build --tag "registry.cn-hangzhou.aliyuncs.com/hapinesszj/z-cli-api:${{github.ref_name}}" .
       # 使用标记的 tag 进行 push
       - name: Push Image to ACR
-        run: docker push registry.cn-hangzhou.aliyuncs.com/vikingmute/lego:${{github.ref_name}}
+        run: docker push registry.cn-hangzhou.aliyuncs.com/hapinesszj/z-cli-api:${{github.ref_name}}
       # 查找 docker-compose-online 文件 并且完成版本替换
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v2
@@ -74,7 +81,7 @@ jobs:
           script: |
             docker login --username=${{secrets.ACR_USERNAME}} --password=${{secrets.ACR_PASSWORD}} registry.cn-hangzhou.aliyuncs.com
             cd ~/z-cli-api/
-            docker-compose -f docker-compose-online.yml down
-            docker-compose -f docker-compose-online.yml up -d
+            docker compose -f docker-compose-online.yml down
+            docker compose -f docker-compose-online.yml up -d
             rm -rf .env
             docker logout registry.cn-hangzhou.aliyuncs.com
