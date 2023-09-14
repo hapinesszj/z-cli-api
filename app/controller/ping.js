@@ -18,7 +18,7 @@ class PingController extends Controller {
       redisStatus: status,
       appVersion: Package.version,
       env: process.env.PING,
-      vesion: 'v3',
+      version: process.env.VERSION,
     });
   }
 }

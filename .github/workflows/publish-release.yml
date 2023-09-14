@@ -28,6 +28,7 @@ jobs:
           echo MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} >> .env
           echo MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} >> .env
           echo PING=${{ secrets.PING }} >> .env
+          echo VERSION=${{ github.ref_name }} >> .env
       # 使用阿里云ACR 完成 docker login
       - name: Login to Aliyun Container Registry (ACR)
         uses: aliyun/acr-login@v1
