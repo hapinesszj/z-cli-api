@@ -1,0 +1,62 @@
+{
+  "name": "z-cli-api",
+  "private": true,
+  "author": "hapinesszj <hapinesszj@gmail.com>",
+  "egg": {
+    "declarations": true
+  },
+  "dependencies": {
+    "ali-oss": "^6.15.2",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "egg": "^3",
+    "egg-mongoose": "^4.0.0",
+    "egg-redis": "^2.5.0",
+    "egg-scripts": "^2",
+    "egg-socket.io": "^4.1.6",
+    "fs-extra": "^10.0.0",
+    "glob": "^7.1.7",
+    "js-base64": "^3.7.5",
+    "simple-git": "^2.40.0",
+    "user-home": "^3.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.5.0",
+    "@commitlint/config-conventional": "^18.5.0",
+    "cz-customizable": "^7.0.0",
+    "egg-bin": "^5",
+    "egg-ci": "^2",
+    "egg-mock": "^5",
+    "eslint": "^8",
+    "eslint-config-egg": "^12",
+    "husky": "^7.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "start": "egg-scripts start --daemon --title=egg-server-z-cli-api --sticky",
+    "stop": "egg-scripts stop --title=egg-server-z-cli-api",
+    "dev": "egg-bin dev",
+    "debug": "egg-bin debug",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "npm run lint && npm run cov",
+    "prepare": "husky install"
+  },
+  "ci": {
+    "version": "16, 18",
+    "type": "github"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hapinesszj/z-cli.git"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-customizable"
+    }
+  }
+}

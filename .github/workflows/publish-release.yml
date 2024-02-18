@@ -1,0 +1,87 @@
+name: Automatically deploy new versions to servers
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Clone source code
+      - uses: actions/checkout@v2
+      # Create env file
+      - name: 'create env file'
+        run: |
+          touch .env
+          echo OSS_ACCESS_KEY=${{ secrets.OSS_ACCESS_KEY }} >> .env
+          echo OSS_ACCESS_SECRET_KEY=${{ secrets.OSS_ACCESS_SECRET_KEY }} >> .env
+          echo OSS_PROD_BUCKET=${{ secrets.OSS_PROD_BUCKET }} >> .env
+          echo OSS_DEV_BUCKET=${{ secrets.OSS_DEV_BUCKET }} >> .env
+          echo OSS_REGION=${{ secrets.OSS_REGION }} >> .env
+          echo REDIS_HOST=${{ secrets.REDIS_HOST }} >> .env
+          echo REDIS_PORT=${{ secrets.REDIS_PORT }} >> .env
+          echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
+          echo MONGO_URL=${{ secrets.MONGO_URL }} >> .env
+          echo MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} >> .env
+          echo MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} >> .env
+          echo MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} >> .env
+          echo MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} >> .env
+          echo PING=${{ secrets.PING }} >> .env
+          echo VERSION=${{ github.ref_name }} >> .env
+      # Using Alibaba Cloud ACR to complete Docker Login
+      - name: Login to Aliyun Container Registry (ACR)
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: https://registry.cn-hangzhou.aliyuncs.com
+          region-id: cn-hangzhou
+          username: '${{ secrets.ACR_USERNAME }}'
+          password: '${{ secrets.ACR_PASSWORD }}'
+      # Use the correct github tag to correspond to the ACR tag for Docker Build
+      - name: Build image for ACR docker
+        run: docker build --tag "registry.cn-hangzhou.aliyuncs.com/hapinesszj/z-cli-api:${{github.ref_name}}" .
+      # Use marked tags for push
+      - name: Push Image to ACR
+        run: docker push registry.cn-hangzhou.aliyuncs.com/hapinesszj/z-cli-api:${{github.ref_name}}
+      # Search for Docker Compose Online file and complete version replacement
+      - name: Find and Replace
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: '{{tag}}'
+          replace: ${{github.ref_name}}
+          include: 'docker-compose-online.yml'
+      - run: cat docker-compose-online.yml
+      # Copying files must be done in a folder, including. env, Docker Compose Online. yml, and mongo entrypoint
+      - name: 'copy necessary files in to one folder'
+        run: |
+          mkdir z-cli-api 
+          cp .env docker-compose-online.yml z-cli-api
+          cp -r mongo-entrypoint z-cli-api
+          ls -a z-cli-api
+      # Copying required files to the server through SCP
+      - name: 'copy z-cli-api folder via scp'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: 'z-cli-api'
+          target: '~'
+      # Log in through SSH and restart the service
+      - name: executing ssh and restart docker
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script_stop: true
+          # Login to Alibaba Cloud ACR
+          # Stop Docker Compose Down
+          # Start service Docker Compose up
+          # Cleaning work
+          script: |
+            docker login --username=${{secrets.ACR_USERNAME}} --password=${{secrets.ACR_PASSWORD}} registry.cn-hangzhou.aliyuncs.com
+            cd ~/z-cli-api/
+            docker compose -f docker-compose-online.yml down
+            docker compose -f docker-compose-online.yml up -d
+            rm -rf .env
+            docker logout registry.cn-hangzhou.aliyuncs.com
