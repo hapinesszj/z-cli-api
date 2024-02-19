@@ -18,7 +18,7 @@ db.createCollection('template')
 db.template.insertMany([
   {
     "name": "vue3基础项目模版",
-    "npmName": "@spark-bit/z-cli-template-vue3",
+    "npmName": "@byte-sculpt/z-cli-template-vue3",
     "version": "1.0.0",
     "type": "normal",
     "installCommand": "npm install",
