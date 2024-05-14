@@ -9,7 +9,7 @@ see [egg docs][egg] for more detail.
 ### Development
 
 ```bash
-$ npm install
+$ npm install 111
 $ npm run dev
 $ open http://localhost:7001/
 ```
